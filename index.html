@@ -667,6 +667,73 @@
   <!-- HLS.js -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
+  // Configuration mise à jour
+  const video = document.getElementById('video');
+  const loader = document.getElementById('loader');
+  
+  // 1. Essayer d'abord avec HTTPS
+  let videoSrc = 'https://69.64.57.208/tm1/playlist.m3u8';
+  
+  // 2. Fallback avec proxy CORS si HTTPS échoue
+  const fallbackSrc = 'https://cors-anywhere.herokuapp.com/http://69.64.57.208/tm1/playlist.m3u8';
+  
+  // 3. Détection de protocole
+  if (window.location.protocol === 'https:' && !videoSrc.startsWith('https')) {
+    videoSrc = fallbackSrc;
+  }
+
+  loader.style.display = 'block';
+
+  if (Hls.isSupported()) {
+    const hls = new Hls({
+      enableWorker: false, // Important pour certains environnements
+      xhrSetup: function(xhr) {
+        xhr.withCredentials = false;
+      }
+    });
+    
+    hls.loadSource(videoSrc);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+      loader.style.display = 'none';
+      video.play().catch(e => {
+        console.error("Erreur de lecture:", e);
+        // Essayer avec le fallback
+        if (videoSrc !== fallbackSrc) {
+          showNotification("Tentative de connexion alternative...");
+          videoSrc = fallbackSrc;
+          hls.loadSource(videoSrc);
+        }
+      });
+    });
+    
+    hls.on(Hls.Events.ERROR, function(event, data) {
+      if (data.fatal) {
+        switch(data.type) {
+          case Hls.ErrorTypes.NETWORK_ERROR:
+            showNotification("Erreur réseau - reconnexion...");
+            hls.startLoad();
+            break;
+          case Hls.ErrorTypes.MEDIA_ERROR:
+            hls.recoverMediaError();
+            break;
+          default:
+            initPlayer();
+            break;
+        }
+      }
+    });
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = videoSrc;
+    video.addEventListener('loadedmetadata', function() {
+      loader.style.display = 'none';
+      video.play();
+    });
+  } else {
+    loader.innerHTML = "Votre navigateur ne supporte pas la lecture HLS. Essayez avec Safari ou Edge.";
+  }
+</script>
+  <script>
     // Configuration initiale
     const video = document.getElementById('video');
     const loader = document.getElementById('loader');
