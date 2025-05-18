@@ -548,7 +548,7 @@
         <i class="fas fa-closed-captioning"></i>
       </button>
       <div id="loader">Chargement ...</div>
-    <video id="video" controls autoplay playsinline></video>
+      <video id="video" controls autoplay playsinline></video>
     </div>
 
     <div class="video-controls">
@@ -558,54 +558,11 @@
       <button class="control-btn secondary" onclick="toggleMute()">
         <i class="fas fa-volume-up" id="volume-icon"></i> Son
       </button>
-      <div class="quality-selector">
-        <select id="quality-select" onchange="changeQuality(this.value)">
-          <option value="auto">Qualité automatique</option>
-          <option value="high">Haute qualité</option>
-          <option value="medium">Qualité moyenne</option>
-          <option value="low">Basse qualité</option>
-        </select>
-      </div>
-      <button class="control-btn secondary" onclick="shareStream()">
-        <i class="fas fa-share-alt"></i> Partager
-      </button>
+     
       <button class="control-btn secondary" onclick="showAudioOnly()">
         <i class="fas fa-music"></i> Audio seul
       </button>
     </div>
-
-    <!-- Sondage en direct -->
-    <div class="poll-container" id="poll-container">
-      <h2><i class="fas fa-poll"></i> Sondage en direct</h2>
-      <p>Que pensez-vous de notre nouvelle grille de programmes ?</p>
-      <div class="poll-option" onclick="votePoll(0)">
-        Excellent
-        <div class="poll-result"><div class="poll-bar" id="poll-bar-0"></div></div>
-      </div>
-      <div class="poll-option" onclick="votePoll(1)">
-        Bien
-        <div class="poll-result"><div class="poll-bar" id="poll-bar-1"></div></div>
-      </div>
-      <div class="poll-option" onclick="votePoll(2)">
-        Moyen
-        <div class="poll-result"><div class="poll-bar" id="poll-bar-2"></div></div>
-      </div>
-      <div class="poll-option" onclick="votePoll(3)">
-        À améliorer
-        <div class="poll-result"><div class="poll-bar" id="poll-bar-3"></div></div>
-      </div>
-    </div>
-
-    <!-- Chat en direct -->
-    <div class="live-chat">
-      <h2><i class="fas fa-comments"></i> Chat en direct</h2>
-      <div class="chat-messages" id="chat-messages">
-        <!-- Messages seront chargés ici -->
-      </div>
-      <div class="chat-input">
-        <input type="text" id="chat-input" placeholder="Envoyez un message..." />
-        <button onclick="sendChatMessage()">Envoyer</button>
-      </div>
     </div>
 
     <div class="program-guide">
@@ -619,10 +576,10 @@
       <h3>Suivez-nous sur les réseaux sociaux</h3>
       <div class="social-links">
         <a href="https://facebook.com/TM1TVMali" class="social-link" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://twitter.com/TM1TVMali" class="social-link" target="_blank"><i class="fab fa-twitter"></i></a>
-        <a href="https://instagram.com/TM1TVMali" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="https://youtube.com/TM1TVMali" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>
-        <a href="https://tiktok.com/@TM1TVMali" class="social-link" target="_blank"><i class="fab fa-tiktok"></i></a>
+        <a href="https://twitter.com/TM1TV223" class="social-link" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://instagram.com/#" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://youtube.com/TM1TVOfficiel2023" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://tiktok.com/#" class="social-link" target="_blank"><i class="fab fa-tiktok"></i></a>
       </div>
     </div>
 
@@ -642,97 +599,10 @@
     </div>
   </main>
 
-  <footer>
-    <div class="footer-content">
-      <div class="footer-links">
-        <a href="#" class="footer-link">A propos</a>
-        <a href="#" class="footer-link">Mentions légales</a>
-        <a href="#" class="footer-link">Confidentialité</a>
-        <a href="#" class="footer-link">Publicité</a>
-        <a href="#" class="footer-link">Recrutement</a>
-      </div>
-      <p>© 2025 TM1 Télévision | Tous droits réservés</p>
-      <p>Chaîne nationale de la République du Mali</p>
-    </div>
-  </footer>
-
-  <div class="theme-selector">
-    <button class="theme-btn theme-dark" onclick="changeTheme('dark')" title="Thème sombre"></button>
-    <button class="theme-btn theme-light" onclick="changeTheme('light')" title="Thème clair"></button>
-    <button class="theme-btn theme-brand" onclick="changeTheme('brand')" title="Thème TM1"></button>
-  </div>
-
   <div class="notification" id="notification"></div>
 
   <!-- HLS.js -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script>
-  // Configuration mise à jour
-  const video = document.getElementById('video');
-  const loader = document.getElementById('loader');
-  
-  // 1. Essayer d'abord avec HTTPS
-  let videoSrc = 'https://69.64.57.208/tm1/playlist.m3u8';
-  
-  // 2. Fallback avec proxy CORS si HTTPS échoue
-  const fallbackSrc = 'https://cors-anywhere.herokuapp.com/http://69.64.57.208/tm1/playlist.m3u8';
-  
-  // 3. Détection de protocole
-  if (window.location.protocol === 'https:' && !videoSrc.startsWith('https')) {
-    videoSrc = fallbackSrc;
-  }
-
-  loader.style.display = 'block';
-
-  if (Hls.isSupported()) {
-    const hls = new Hls({
-      enableWorker: false, // Important pour certains environnements
-      xhrSetup: function(xhr) {
-        xhr.withCredentials = false;
-      }
-    });
-    
-    hls.loadSource(videoSrc);
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED, function() {
-      loader.style.display = 'none';
-      video.play().catch(e => {
-        console.error("Erreur de lecture:", e);
-        // Essayer avec le fallback
-        if (videoSrc !== fallbackSrc) {
-          showNotification("Tentative de connexion alternative...");
-          videoSrc = fallbackSrc;
-          hls.loadSource(videoSrc);
-        }
-      });
-    });
-    
-    hls.on(Hls.Events.ERROR, function(event, data) {
-      if (data.fatal) {
-        switch(data.type) {
-          case Hls.ErrorTypes.NETWORK_ERROR:
-            showNotification("Erreur réseau - reconnexion...");
-            hls.startLoad();
-            break;
-          case Hls.ErrorTypes.MEDIA_ERROR:
-            hls.recoverMediaError();
-            break;
-          default:
-            initPlayer();
-            break;
-        }
-      }
-    });
-  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = videoSrc;
-    video.addEventListener('loadedmetadata', function() {
-      loader.style.display = 'none';
-      video.play();
-    });
-  } else {
-    loader.innerHTML = "Votre navigateur ne supporte pas la lecture HLS. Essayez avec Safari ou Edge.";
-  }
-</script>
   <script>
     // Configuration initiale
     const video = document.getElementById('video');
@@ -742,10 +612,7 @@
     const currentTimeElement = document.getElementById('current-time');
     const currentProgramElement = document.getElementById('current-program');
     const programListElement = document.getElementById('program-list');
-    const favoriteBtn = document.getElementById('favorite-btn');
     const subtitlesBtn = document.getElementById('subtitles-btn');
-    const chatMessages = document.getElementById('chat-messages');
-    const chatInput = document.getElementById('chat-input');
     const pollContainer = document.getElementById('poll-container');
     
     // Sources de flux avec différentes qualités
@@ -761,8 +628,6 @@
     let isFavorite = false;
     let subtitlesEnabled = false;
     let audioOnlyMode = false;
-    let pollResults = [0, 0, 0, 0]; // Résultats du sondage
-    let hasVoted = false;
 
     // Initialiser le lecteur
     function initPlayer(quality = 'auto') {
@@ -882,110 +747,6 @@
         subtitlesBtn.innerHTML = '<i class="fas fa-closed-captioning"></i> OFF';
       }
     }
-
-    // 7. Ajouter aux favoris
-    function toggleFavorite() {
-      isFavorite = !isFavorite;
-      if (isFavorite) {
-        favoriteBtn.innerHTML = '<i class="fas fa-star"></i>';
-        favoriteBtn.title = 'Retirer des favoris';
-        showNotification('Chaîne ajoutée aux favoris');
-        // Enregistrer dans localStorage
-        localStorage.setItem('tm1_favorite', 'true');
-      } else {
-        favoriteBtn.innerHTML = '<i class="far fa-star"></i>';
-        favoriteBtn.title = 'Ajouter aux favoris';
-        showNotification('Chaîne retirée des favoris');
-        localStorage.removeItem('tm1_favorite');
-      }
-    }
-
-    // 8. Chat en direct (simulé)
-    function sendChatMessage() {
-      const message = chatInput.value.trim();
-      if (message) {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        
-        const messageElement = document.createElement('div');
-        messageElement.innerHTML = `<strong>Vous (${timeString}):</strong> ${message}`;
-        chatMessages.appendChild(messageElement);
-        
-        // Faire défiler vers le bas
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        // Effacer le champ de saisie
-        chatInput.value = '';
-        
-        // Simuler une réponse
-        setTimeout(() => {
-          const responses = [
-            "Merci pour votre message!",
-            "Nous transmettons votre commentaire à l'équipe!",
-            "Excellent point de vue!",
-            "Merci de suivre TM1!",
-            "Votre message a été noté!"
-          ];
-          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-          
-          const responseElement = document.createElement('div');
-          responseElement.innerHTML = `<strong>Modérateur (${timeString}):</strong> ${randomResponse}`;
-          responseElement.style.color = '#00ffcc';
-          chatMessages.appendChild(responseElement);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 2000);
-      }
-    }
-
-    // 9. Sondage en direct
-    function votePoll(option) {
-      if (hasVoted) {
-        showNotification('Vous avez déjà voté!');
-        return;
-      }
-      
-      pollResults[option]++;
-      hasVoted = true;
-      
-      // Calculer les pourcentages
-      const total = pollResults.reduce((a, b) => a + b, 0);
-      const percentages = pollResults.map(v => Math.round((v / total) * 100));
-      
-      // Mettre à jour les barres
-      for (let i = 0; i < 4; i++) {
-        document.getElementById(`poll-bar-${i}`).style.width = `${percentages[i]}%`;
-      }
-      
-      showNotification('Merci pour votre vote!');
-    }
-
-    // 10. Changer le thème
-    function changeTheme(theme) {
-      const root = document.documentElement;
-      
-      if (theme === 'light') {
-        root.style.setProperty('--dark-bg', '#f5f5f5');
-        root.style.setProperty('--darker-bg', '#e0e0e0');
-        root.style.setProperty('--light-text', '#333333');
-        root.style.setProperty('--gray-text', '#666666');
-      } else if (theme === 'brand') {
-        root.style.setProperty('--dark-bg', '#0066cc');
-        root.style.setProperty('--darker-bg', '#003366');
-        root.style.setProperty('--primary-color', '#ffffff');
-        root.style.setProperty('--light-text', '#ffffff');
-        root.style.setProperty('--gray-text', '#cccccc');
-      } else { // dark (par défaut)
-        root.style.setProperty('--dark-bg', '#000000');
-        root.style.setProperty('--darker-bg', '#1a1a1a');
-        root.style.setProperty('--primary-color', '#00ffcc');
-        root.style.setProperty('--light-text', '#ffffff');
-        root.style.setProperty('--gray-text', '#aaaaaa');
-      }
-      
-      localStorage.setItem('tm1_theme', theme);
-      showNotification(`Thème ${theme} activé`);
-    }
-
     // Afficher une notification
     function showNotification(message) {
       notification.textContent = message;
